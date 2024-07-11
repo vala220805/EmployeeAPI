@@ -1,0 +1,104 @@
+﻿@page "/Employees"
+@rendermode InteractiveServer
+
+@using BlazorBootstrap
+
+@using CurrieTechnologies.Razor.SweetAlert2;
+@using MTechTest.Models
+@using MTechTest.Services
+
+@inject EmployeeService service;
+@inject NavigationManager navigation;
+@inject SweetAlertService Swal;
+
+<PageTitle>Employee</PageTitle>
+
+<h1>Employee</h1>
+
+
+<div class=database-table>
+    @if (employees == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <table class="school-table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Editar</th>
+                    <th>Eliminar</th>
+                    <th>Información</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var employee in employees)
+                {
+                    <tr>
+                        <td>@(employee.Name + " " + employee.LastName)</td>
+                        <td>
+                            <a class="btn btn-primary btn-sm" href="employee/@employee.ID">
+                                <Icon Name="IconName.Pencil" />
+                            </a>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm" @onclick="(() => DeleteEmployee(employee.ID))">
+                                <Icon Name="IconName.Trash" />
+                            </button>
+                        </td>
+                        <td>
+                            <a class="btn btn-info" href="Info/@employee.ID">
+                                <Icon Name="IconName.InfoCircle" />
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+<div class="btn-new">
+    <a class="btn btn-primary btn-la" href="employee">New Employee </a>
+</div>
+
+
+@code
+{
+    private string nombreCompleto;
+    private Offcanvas infocanvas = default!;
+    List<Employee>? employees { get; set; }
+    Employee? employeeShowOff = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        employees = (await service.GetEmployees()).ToList();
+    }
+
+    private async Task DeleteEmployee(int id)
+    {
+        var resultado = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = "Delete Employee",
+                Text = "Are you sure?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        if (resultado.IsConfirmed)
+        {
+            await service.DeleteEmployee(id);
+
+
+            employees = employees!.FindAll(a => a.ID != id);
+
+        }
+    }
+
+    private async Task InfoCanvasClick(int id)
+    {
+        await infocanvas.ShowAsync();
+    }
+
+}
+
