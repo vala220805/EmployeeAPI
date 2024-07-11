@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# EmployeeAPI
-=======
 
 ### Summary of Sections:
 
@@ -15,4 +12,3 @@
    - Update the configuration file with the correct connection string.
    - Build and run the project.
 
->>>>>>> db87e65bb8a5dedb57a83053d8952f0bbb22e5c6
