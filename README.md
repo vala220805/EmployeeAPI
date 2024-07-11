@@ -2,7 +2,8 @@
 ### Summary of Sections:
 
 1. **Overview**: Employee API made with Blazor
-2. **Prerequisites**: - [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
+2. **Prerequisites**:
+- [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
 - [SQL Server Management Studio (SSMS)](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms)
 
 3. **Project Setup**:
