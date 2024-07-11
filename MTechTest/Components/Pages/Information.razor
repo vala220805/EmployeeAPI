@@ -1,0 +1,58 @@
+﻿@page "/Info"
+@page "/Info/{idSelected:int}"
+@using MTechTest.Models
+@using MTechTest.Services
+@rendermode InteractiveServer
+
+
+
+@inject EmployeeService alumnoService;
+
+
+<h1>@(selectedEmployee.Name + " " + selectedEmployee.LastName)</h1>
+
+<div class="add-form">
+<Card Class="mb-4" Style="width:18rem;">
+
+        @if (selectedEmployee.Status == EmployeeStatus.Active)
+        {
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Green_dot.svg/600px-Green_dot.svg.png" alt="placeholder" />
+            <h2 style="text-align: center;">Active</h2>
+        }
+        else if (selectedEmployee.Status == EmployeeStatus.Inactive)
+        {
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Red_Circle%28small%29.svg/2048px-Red_Circle%28small%29.svg.png" />
+            <h2 style="text-align: center;">Inactive</h2>
+        }
+        else
+        {
+            <img src="https://media-s3-us-east-1.ceros.com/houston-methodist/images/2024/05/15/b378d992e302a9ccb89e560a8c3bf28c/gray.png" />
+            <h2 style="text-align: center;">NotSet</h2>
+        }
+
+        <CardBody style="text-align: center;">
+        <CardTitle>@selectedEmployee!.Name</CardTitle>
+        <CardSubTitle>@selectedEmployee!.LastName</CardSubTitle>
+        <CardText>@selectedEmployee!.RFC</CardText>
+        <CardText>@((selectedEmployee!.BornDate).ToShortDateString())</CardText>
+        <CardFooter>Id: @selectedEmployee!.ID</CardFooter>
+    </CardBody>
+</Card>
+</div>
+
+
+@code
+{
+    [Parameter]
+    public int idSelected {get; set;}
+    Employee? selectedEmployee = new Employee();
+
+    protected override async Task OnInitializedAsync()
+    {
+        selectedEmployee = await alumnoService.GetEmployee(idSelected);
+    }
+    
+
+}
+
+

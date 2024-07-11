@@ -1,0 +1,119 @@
+﻿@page "/Employee"
+@page "/Employee/{idEmployeeToEdit:int}"
+@rendermode InteractiveServer
+
+@using CurrieTechnologies.Razor.SweetAlert2;
+@using System.Text.RegularExpressions
+@using MTechTest.Models
+@using MTechTest.Services
+
+@inject EmployeeService service;
+@inject RfcValidator rfcValidator;
+@inject NavigationManager navigation;
+@inject SweetAlertService Swal;
+
+
+<h1>@titulo</h1>
+
+<div class="add-form">
+    <EditForm Model="employee" OnValidSubmit="OnValidSubmit">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <InputText class="form-control" @bind-Value="employee.Name"></InputText>
+            <ValidationMessage For="@(() => employee.Name)"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Apellidos</label>
+            <InputText class="form-control" @bind-Value="employee.LastName"></InputText>
+            <ValidationMessage For="@(() => employee.LastName)"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">RFC</label>
+            <InputText class="form-control" @bind-Value="employee.RFC"></InputText>
+            <ValidationMessage For="@(() => employee.RFC)"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Status</label>
+            <InputSelect class="form-control" @bind-Value="employee.Status">
+                <option value="0">Seleccionar</option>
+                <option value="@EmployeeStatus.NotSet">NotSet</option>
+                <option value="@EmployeeStatus.Active">Active</option>
+                <option value="@EmployeeStatus.Inactive">Inactive</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => employee.Status)"></ValidationMessage>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">FechaNacimiento</label>
+            <InputDate class="form-control" @bind-Value="employee.BornDate"></InputDate>
+            <ValidationMessage For="@(() => employee.BornDate)"></ValidationMessage>
+        </div>
+
+        <button class="btn btn-success sm" type="submit">
+            @btnText
+        </button>
+
+        <a class="btn btn-warning" href="employees">Volver</a>
+    </EditForm>
+</div>
+
+@code
+{
+    [Parameter]
+    public int idEmployeeToEdit { get; set; } = 0;
+
+    EmployeeStatus status { get; set; }
+
+    string titulo = string.Empty;
+    string btnText = string.Empty;
+
+    Employee? employee = new ();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (idEmployeeToEdit != 0)
+        {
+            employee = await service.GetEmployee(idEmployeeToEdit);
+            btnText = "Update Employee";
+            titulo = "Edit Employee";
+        }
+        else
+        {
+            employee.BornDate = DateTime.Today;
+            btnText = "Save Employee";
+            titulo = "New Employee";
+        }
+    }
+
+    private async Task OnValidSubmit()
+    {
+        if(!rfcValidator.ValidateRfc(employee))
+        {
+            await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Title = "Rfc is not valid",
+                    Text = "Check your RFC",
+                    Icon = SweetAlertIcon.Warning,  
+                });
+                return;
+        }
+
+        //bool edited = false;
+
+        if (idEmployeeToEdit == 0)
+        {
+            //edited = true;
+            await service.AddEmployee(employee);
+        }
+        else
+        {
+            //edited = true;
+            await service.UpdateEmployee(idEmployeeToEdit, employee);
+        }
+
+        
+            navigation.NavigateTo("/Employees");
+        
+
+    }
+}
